@@ -1,2 +1,32 @@
 ---
 # Role default lower priority variables
+
+# Path to the source project where to make the merge request. If not given the
+# default is to use the project with the same name in the user personal
+# workspace
+
+#gitlab_merge_request_source_project_path:
+
+# Source project branch to merge
+
+gitlab_merge_request_source_branch:
+
+# Path to the target project where to make the merge request
+
+gitlab_merge_request_target_project_path:
+
+# Destination project branch to merge in
+
+gitlab_merge_request_target_branch:
+
+# Merge request title
+
+gitlab_merge_request_title:
+
+# Merge request state. Can be present or absent
+
+gitlab_merge_request_state: present
+
+# Remove the source branch after merge
+
+gitlab_merge_request_remove_source_branch: no
