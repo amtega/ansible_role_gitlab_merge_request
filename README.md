@@ -1,6 +1,6 @@
 # Amtega gitlab_merge_request role
 
-This is an [Ansible](http://www.ansible.com) role to make a merge request in a GitLab project.
+This is an [Ansible](http://www.ansible.com) role to manage GitLab project merge request.
 
 ## Role Variables
 
@@ -17,8 +17,13 @@ This is an example playbook:
   roles:  
     - amtega.gitlab_merge_request
   vars:    
-    gitlab_merge_request_target_project_path: /myproject
-    gitlab_merge_request_allow_duplicated: no
+        gitlab_merge_request_source_project_path: myuser/myproject
+        gitlab_merge_request_source_branch: mybranch
+        gitlab_merge_request_target_project_path: /myproject
+        gitlab_merge_request_target_branch: master
+        gitlab_merge_request_title: "Merge mybranch into master"
+        gitlab_merge_request_remove_source_branch: no
+        gitlab_merge_request_state: present
 ```
 
 ## Testing
