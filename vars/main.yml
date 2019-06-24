@@ -1,2 +1,29 @@
 ---
 # Role variables
+
+# Variables that came from gitlab_cli role
+
+gitlab_merge_request_config_file_option: >-
+  {{ (gitlab_cli_config_file is defined)
+     | ternary("-c " + gitlab_cli_config_file | default(''), "") }}
+
+gitlab_merge_request_section_option: >-
+  {{ (gitlab_cli_section is defined)
+     | ternary("-g " + gitlab_cli_section | default(''), "") }}
+
+# Target project path with all necessary character transformations
+
+gitlab_merge_request_target_project: >-
+  {{ gitlab_merge_request_target_project_path | regex_replace("/", "%2F") }}
+
+# Source project path with all necessary character transformations
+
+gitlab_merge_request_default_source_project: >-
+  {{ gitlab_merge_request_user.username
+     + "%2F"
+     + gitlab_merge_request_target_project_path | basename }}
+
+gitlab_merge_request_source_project: >-
+  {{ gitlab_merge_request_source_project_path
+     | default(gitlab_merge_request_default_source_project)
+     | regex_replace("/", "%2F") }}
