@@ -1,6 +1,17 @@
 ---
 # Role tasks
 
+- include_role:
+    name: amtega.check_platform
+  vars:
+    check_platform_distributions:
+      centos: 7
+      fedora: 29
+      rhel: 7
+
+- include_role:
+    name: amtega.gitlab_cli
+
 - block:
     - name: Load user info from gitlab server
       command: >-
@@ -49,6 +60,7 @@
         and not gitlab_merge_request_result.stderr
             is search("Impossible to destroy object .*Not found")
       changed_when: gitlab_merge_request_command != "/bin/true"
+
     - name: Setup fact with gitlab merge request info
       set_fact:
         gitlab_merge_request_fact: >-
