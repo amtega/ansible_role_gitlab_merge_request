@@ -15,7 +15,7 @@
 - block:
     - name: Load user info from gitlab server
       command: >-
-        gitlab
+        {{ gitlab_cli_path | default("gitlab") }}
         {{ gitlab_merge_request_config_file_option }}
         {{ gitlab_merge_request_section_option }}
         -o yaml current-user get
@@ -24,7 +24,7 @@
 
     - name: Load projects info from gitlab server
       command: >-
-        gitlab
+        {{ gitlab_cli_path | default("gitlab") }}
         {{ gitlab_merge_request_config_file_option }}
         {{ gitlab_merge_request_section_option }}
         -o yaml
@@ -40,7 +40,7 @@
 
     - name: Load project open merge requests info from gitlab server
       command: >-
-        gitlab
+        {{ gitlab_cli_path | default("gitlab") }}
         {{ gitlab_merge_request_config_file_option }}
         {{ gitlab_merge_request_section_option }}
         -o yaml
@@ -99,7 +99,7 @@
       {{ gitlab_merge_request_search | length > 0 }}
 
     gitlab_merge_request_create_command: >-
-      gitlab
+      {{ gitlab_cli_path | default("gitlab") }}
       {{ gitlab_merge_request_config_file_option }}
       {{ gitlab_merge_request_section_option }}
       -o yaml
@@ -113,7 +113,7 @@
       --title "{{ gitlab_merge_request_title }}"
 
     gitlab_merge_request_delete_command: >-
-      gitlab
+      {{ gitlab_cli_path | default("gitlab") }}
       {{ gitlab_merge_request_config_file_option }}
       {{ gitlab_merge_request_section_option }}
       -o yaml
