@@ -1,15 +1,13 @@
 ---
 # Tasks for testing role
 
-- name: Run idempotence test
+- name: Setup testing sandbox
   hosts: localhost
   roles:
     - role: amtega.docker_presets
       vars:
         docker_presets_images_json_query: >-
-          [? starts_with(name, `centos-7`)
-             || starts_with(name, `fedora-29`)
-             || starts_with(name, `fedora-30`) ]
+          [? starts_with(name, `centos-7`) ]
 
     - role: amtega.docker_sandbox
       vars:
@@ -23,43 +21,23 @@
   roles:
     - role: amtega.gitlab_fork
       vars:
-        gitlab_cli_api_url: >-
-          {{ gitlab_merge_request_test_gitlab_cli_api_url }}
-        gitlab_cli_api_version: >-
-          {{ gitlab_merge_request_test_gitlab_cli_api_version | default(4) }}
-        gitlab_cli_login_token: >-
-          {{ gitlab_merge_request_test_gitlab_cli_token }}
-        gitlab_cli_validate_certs: >-
-          {{ gitlab_merge_request_test_gitlab_cli_validate_certs
-             | default(false) }}
-        gitlab_fork_project_path: >-
-          {{ gitlab_merge_request_test_target_project_path }}
+        gitlab_fork_name: ansible_gitlab_merge_request_test
+        gitlab_fork_state: present
 
     - role: amtega.gitlab_merge_request
       vars:
-        gitlab_merge_request_source_project_path: >-
-          {{ gitlab_merge_request_test_source_project_path }}
-        gitlab_merge_request_source_branch: master
-        gitlab_merge_request_target_project_path: >-
-          {{ gitlab_merge_request_test_target_project_path }}
-        gitlab_merge_request_target_branch: master
-        gitlab_merge_request_title: "Ansible role gitlab_merge test"
-        gitlab_merge_request_remove_source_branch: no
         gitlab_merge_request_state: present
 
     - role: amtega.gitlab_merge_request
       vars:
-        gitlab_merge_request_source_project_path: >-
-          {{ gitlab_merge_request_test_source_project_path }}
-        gitlab_merge_request_source_branch: master
-        gitlab_merge_request_target_project_path: >-
-          {{ gitlab_merge_request_test_target_project_path }}
-        gitlab_merge_request_target_branch: master
-        gitlab_merge_request_title: "Ansible role gitlab_merge test"
-        gitlab_merge_request_remove_source_branch: no
-        gitlab_merge_request_state: absent
+        gitlab_merge_request_state: closed
 
-- name: Cleanup docker docker sandbox
+    - role: amtega.gitlab_fork
+      vars:
+        gitlab_fork_name: ansible_gitlab_merge_request_test
+        gitlab_fork_state: absent
+
+- name: Cleanup testing sandbox
   hosts: localhost
   roles:
     - role: amtega.docker_sandbox

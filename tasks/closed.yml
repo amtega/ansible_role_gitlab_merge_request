@@ -1,0 +1,28 @@
+---
+# Closed state role tasks
+
+- block:
+    - include_tasks: open.yml
+
+    - name: Close merge request
+      uri:
+        url: >-
+          {{ gitlab_merge_request_api_url
+             + "/projects/"
+             + gitlab_merge_request_target_project_id
+             + "/merge_requests/"
+             + (gitlab_merge_request_search | first).iid | string }}
+        method: PUT
+        headers:
+          "Private-Token": "{{ gitlab_fork_token }}"
+        body_format: json
+        body:
+          state_event: close
+        return_content: yes
+        validate_certs: "{{ gitlab_fork_validate_certs }}"
+        status_code: 200
+      register: gitlab_merge_request_close_result
+      changed_when: gitlab_merge_request_close_result.status == 202
+      no_log: "{{ gitlab_merge_request_no_log | bool }}"
+  tags:
+    - role::gitlab_merge_request

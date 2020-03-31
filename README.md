@@ -12,41 +12,27 @@ This is an example playbook:
 
 ``` yaml
 ---
-- name: gitlab_merge_request role sample
-  hosts: localhost
+- hosts: localhost
   roles:  
     - amtega.gitlab_merge_request
   vars:    
-        gitlab_merge_request_source_project_path: myuser/myproject
-        gitlab_merge_request_source_branch: mybranch
-        gitlab_merge_request_target_project_path: /myproject
-        gitlab_merge_request_target_branch: master
-        gitlab_merge_request_title: "Merge mybranch into master"
-        gitlab_merge_request_remove_source_branch: no
-        gitlab_merge_request_state: present
+    gitlab_merge_request_server: https://gitlab.acme.com
+    gitlab_merge_request_api_version: 4
+    gitlab_merge_request_token: mytoken
+    gitlab_merge_request_source_project_path: myuser/myproject
+    gitlab_merge_request_source_branch: mybranch
+    gitlab_merge_request_target_project_path: /myproject
+    gitlab_merge_request_target_branch: master
+    gitlab_merge_request_title: "Merge mybranch into master"
+    gitlab_merge_request_remove_source_branch: no
+    gitlab_merge_request_state: present
 ```
 
 ## Testing
 
 Tests are based on docker containers. You can setup docker engine quickly using the playbook `files/setup.yml` available in the role [amtega.docker_engine](https://galaxy.ansible.com/amtega/docker_engine).
 
-Once you have docker, you can run the tests with the following commands:
-
-```shell
-$ cd amtega.gitlab_merge_request/tests
-$ ansible-playbook main.yml
-```
-
-To run test you must pass the following set of variables, that can be defined in the inventory or passed in the command line:
-
-- `gitlab_merge_request_test_gitlab_cli_api_url`: gitlab cli api url
-- `gitlab_merge_request_test_gitlab_cli_api_version`: gitlab cli api (default is 4)
-- `gitlab_merge_request_test_gitlab_cli_token`: gitlab cli token to connect
-- `gitlab_merge_request_test_gitlab_cli_validate_certs`: validate certs when calling gitlab cli (default is `no`)
-- `gitlab_merge_request_test_source_project_path`: path of the source project
-- `gitlab_merge_request_test_target_project_path`: path of the target project
-
-One way to provide all the previous information is calling the testing playbook an additional vault inventory plus the default one provided for testing, as it's show in this example:
+To run test you need provide the variables defined in `defaults/main.yml` and also the variables required by `amtega.gitlab_fork` role. One way to provide this information is calling the testing playbook passing an additional plus the default one provided for testing, as it's show in this example:
 
 ```shell
 $ cd amtega.gitlab_merge_request/tests
@@ -55,7 +41,7 @@ $ ansible-playbook main.yml -i inventory -i ~/mycustominventory.yml --vault-id m
 
 ## License
 
-Copyright (C) 2019 AMTEGA - Xunta de Galicia
+Copyright (C) 2020 AMTEGA - Xunta de Galicia
 
 This role is free software: you can redistribute it and/or modify it under the terms of:
 
