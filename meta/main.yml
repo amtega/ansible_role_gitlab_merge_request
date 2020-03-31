@@ -7,15 +7,11 @@ galaxy_info:
   description: Manage a GitLab project merge request
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
-  min_ansible_version: 2.8
+  min_ansible_version: 2.9
   platforms:
-    - name: EL
+    - name: GenericLinux
       versions:
-        - 7
-    - name: Fedora
-      versions:
-        - 29
-        - 30
+        - all
   galaxy_tags:
     - gitlab
     - project
@@ -25,10 +21,10 @@ galaxy_info:
     - request
 
 dependencies:
-  - role: amtega.check_platform
-    tags:
-      - never
-
-  - role: amtega.gitlab_cli
-    tags:
-      - never
+  - role: amtega.gitlab_projects_fact
+    vars:
+      gitlab_projects_fact_server: "{{ grp_all_gitlab_server }}"
+      gitlab_projects_fact_api_version: "{{ grp_all_gitlab_api_version }}"
+      gitlab_projects_fact_token: "{{ grp_all_ansible_gitlab_token }}"
+      gitlab_projects_fact_owned: no
+      gitlab_projects_fact_validate_certs: "{{ gitlab_clean_validate_certs }}"

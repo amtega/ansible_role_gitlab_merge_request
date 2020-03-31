@@ -1,0 +1,44 @@
+---
+# Present state role tasks
+
+- block:
+    - include_tasks: open.yml
+
+    - name: Setup gitlab merge request
+      uri:
+        url: >-
+          {{ gitlab_merge_request_api_url
+             + "/projects/"
+             + gitlab_merge_request_source_project_id
+             + "/merge_requests" }}
+        method: POST
+        headers:
+          "Private-Token": "{{ gitlab_projects_fact_token }}"
+        body_format: json
+        body:
+          source_branch: "{{ gitlab_merge_request_source_branch }}"
+          target_project_id: "{{ gitlab_merge_request_target_project_id }}"
+          target_branch: "{{ gitlab_merge_request_target_branch }}"
+          remove_source_branch: >-
+            {{ gitlab_merge_request_remove_source_branch | bool }}
+          title: "{{ gitlab_merge_request_title }}"
+        status_code: 201
+        return_content: yes
+        validate_certs: "{{ gitlab_merge_request_validate_certs }}"
+      register: gitlab_merge_request_result
+      changed_when: gitlab_merge_request_result.status == 201
+      failed_when: >-
+        gitlab_merge_request_result.status != 201
+        and (gitlab_merge_request_result.status == 409
+             and not gitlab_merge_request_exists)
+      no_log: "{{ gitlab_merge_request_no_log | bool }}"
+
+    - name: Setup fact with gitlab merge request info
+      set_fact:
+        gitlab_merge_request_fact: >-
+          {{ (gitlab_merge_request_result is changed)
+             | ternary(gitlab_merge_request_result.json,
+                       gitlab_merge_request_search.0 | default({})) }}
+
+  tags:
+    - role::gitlab_merge_request

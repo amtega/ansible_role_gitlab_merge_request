@@ -1,0 +1,43 @@
+---
+# Merged state role tasks
+
+- block:
+    - name: Assert merge is possible
+      assert:
+        that: gitlab_merge_request_fact.merge_status == "can_be_merged"
+
+    - name: Merge request
+      uri:
+        url: >-
+          {{ gitlab_merge_request_api_url
+             + "/projects/"
+             + gitlab_merge_request_target_project_id
+             + "/merge_requests/"
+             + gitlab_merge_request_fact.iid | string
+             + "/merge" }}
+        method: PUT
+        headers:
+          "Private-Token": "{{ gitlab_projects_fact_token }}"
+        body_format: json
+        body:
+          merge_commit_message: "{{ gitlab_merge_request_commit_message }}"
+          squash: "{{ gitlab_merge_request_squash | bool }}"
+          squash_commit_message: >-
+            {{ gitlab_merge_request_squash_commit_message }}
+          should_remove_source_branch: >-
+            {{ gitlab_merge_request_remove_source_branch | bool }}
+          merge_when_pipeline_succeeds: >-
+            {{ gitlab_merge_request_when_pipeline_succeeds | bool }}
+        status_code: 200
+        return_content: yes
+        validate_certs: "{{ gitlab_merge_request_validate_certs }}"
+      register: gitlab_merge_request_accept_result
+      no_log: "{{ gitlab_merge_request_no_log | bool }}"
+
+    - name: Update fact with gitlab merge accepted request info
+      set_fact:
+        gitlab_merge_request_fact: >-
+          {{ gitlab_merge_request_accept_result.json }}
+      when: gitlab_merge_request_accept_result is changed
+  tags:
+    - role::gitlab_merge_request

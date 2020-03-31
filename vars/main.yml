@@ -1,29 +1,48 @@
 ---
 # Role variables
 
-# Variables that came from gitlab_cli role
+# API url
 
-gitlab_merge_request_config_file_option: >-
-  {{ (gitlab_cli_config_file is defined)
-     | ternary("-c " + gitlab_cli_config_file | default(''), "") }}
+gitlab_merge_request_api_url: >-
+  {{ gitlab_merge_request_server
+     + "/api/v"
+     + gitlab_merge_request_api_version | string }}
 
-gitlab_merge_request_section_option: >-
-  {{ (gitlab_cli_section is defined)
-     | ternary("-g " + gitlab_cli_section | default(''), "") }}
+# Source project id
 
-# Target project path with all necessary character transformations
+gitlab_merge_request_source_project_id: >-
+  {{ (gitlab_projects_fact
+      | selectattr("path_with_namespace",
+                   "equalto",
+                   gitlab_merge_request_source_project_path)
+      | first).id }}
 
-gitlab_merge_request_target_project: >-
-  {{ gitlab_merge_request_target_project_path | regex_replace("/", "%2F") }}
+# Target project id
 
-# Source project path with all necessary character transformations
+gitlab_merge_request_target_project_id: >-
+  {{ (gitlab_projects_fact
+      | selectattr("path_with_namespace",
+                   "equalto",
+                   gitlab_merge_request_target_project_path)
+      | first).id }}
 
-gitlab_merge_request_default_source_project: >-
-  {{ gitlab_merge_request_user.username
-     + "%2F"
-     + gitlab_merge_request_target_project_path | basename }}
+# Merge request search
 
-gitlab_merge_request_source_project: >-
-  {{ gitlab_merge_request_source_project_path
-     | default(gitlab_merge_request_default_source_project)
-     | regex_replace("/", "%2F") }}
+gitlab_merge_request_search: >-
+  {{ gitlab_merge_requests_opened_info_result.json
+     | selectattr("source_project_id",
+                  "equalto",
+                  gitlab_merge_request_source_project_id | int)
+     | selectattr("source_branch",
+                  "equalto",
+                  gitlab_merge_request_source_branch)
+     | selectattr("target_project_id",
+                  "equalto",
+                  gitlab_merge_request_target_project_id | int)
+     | selectattr("target_branch",
+                  "equalto",
+                  gitlab_merge_request_target_branch)
+     | list }}
+
+gitlab_merge_request_exists: >-
+  {{ gitlab_merge_request_search | length > 0 }}
