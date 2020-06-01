@@ -49,6 +49,14 @@ gitlab_merge_request_when_pipeline_succeeds: no
 
 gitlab_merge_request_validate_certs: yes
 
+# Retries during merge request operations
+
+gitlab_merge_request_retries: 10
+
+# Delay in seconds between retries during merge request operations
+
+gitlab_merge_request_delay: 1
+
 # Hide sensitive information
 
 gitlab_merge_request_no_log: yes

@@ -1,0 +1,23 @@
+---
+
+- name: Converge
+  hosts: molecule_hosts
+  gather_facts: no
+  roles:
+    - role: amtega.gitlab_fork
+      vars:
+        gitlab_fork_name: ansible_gitlab_merge_request_test
+        gitlab_fork_state: present
+
+    - role: amtega.gitlab_merge_request
+      vars:
+        gitlab_merge_request_state: present
+
+    - role: amtega.gitlab_merge_request
+      vars:
+        gitlab_merge_request_state: closed
+
+    - role: amtega.gitlab_fork
+      vars:
+        gitlab_fork_name: ansible_gitlab_merge_request_test
+        gitlab_fork_state: absent
