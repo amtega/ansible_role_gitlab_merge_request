@@ -2,8 +2,6 @@
 # Merged state role tasks
 
 - block:
-    - debug: var=gitlab_merge_request_fact
-
     - name: Assert merge is possible
       assert:
         that: gitlab_merge_request_fact.merge_status == "can_be_merged"
