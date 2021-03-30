@@ -22,7 +22,9 @@
           remove_source_branch: >-
             {{ gitlab_merge_request_remove_source_branch | bool }}
           title: "{{ gitlab_merge_request_title }}"
-        status_code: 201
+        status_code:
+          - 201
+          - 409
         return_content: yes
         validate_certs: "{{ gitlab_merge_request_validate_certs }}"
       register: gitlab_merge_request_result
@@ -31,6 +33,9 @@
         gitlab_merge_request_result.status != 201
         and (gitlab_merge_request_result.status == 409
              and not gitlab_merge_request_exists)
+      retries: "{{ gitlab_merge_request_retries }}"
+      delay: "{{ gitlab_merge_request_delay }}"
+      until: gitlab_merge_request_result.status in [201, 409]
       no_log: "{{ gitlab_merge_request_no_log | bool }}"
 
     - name: Get merge request status
@@ -53,7 +58,10 @@
       register: gitlab_merge_request_status_result
       retries: "{{ gitlab_merge_request_retries }}"
       delay: "{{ gitlab_merge_request_delay }}"
-      until: gitlab_merge_request_status_result.json.merge_status != "checking"
+      until: >-
+        gitlab_merge_request_status_result.json.merge_status
+        | default("checking")
+        != "checking"
       no_log: "{{ gitlab_merge_request_no_log | bool }}"
 
     - name: Setup fact with gitlab merge request info
