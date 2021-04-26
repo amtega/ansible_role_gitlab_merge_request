@@ -3,6 +3,7 @@
 
 galaxy_info:
   role_name: gitlab_merge_request
+  namespace: amtega
   author: Juan Antonio Valiño García
   description: Manage a GitLab project merge request
   company: AMTEGA - Xunta de Galicia
