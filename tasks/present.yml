@@ -29,14 +29,25 @@
         validate_certs: "{{ gitlab_merge_request_validate_certs }}"
       register: gitlab_merge_request_result
       changed_when: gitlab_merge_request_result.status == 201
-      failed_when: >-
-        gitlab_merge_request_result.status != 201
-        and (gitlab_merge_request_result.status == 409
-             and not gitlab_merge_request_exists)
       retries: "{{ gitlab_merge_request_retries }}"
       delay: "{{ gitlab_merge_request_delay }}"
       until: gitlab_merge_request_result.status in [201, 409]
+      ignore_errors: yes
       no_log: "{{ gitlab_merge_request_no_log | bool }}"
+
+    - name: Assert merge request was setup
+      assert:
+        that: >-
+          gitlab_merge_request_result.status == 201
+          or (gitlab_merge_request_result.status == 409
+              and gitlab_merge_request_exists)
+        quiet: yes
+        fail_msg: >-
+          Merge request was not created correctly.
+          Url: "{{ gitlab_merge_request_result.url | default('') }}".
+          Msg: {{ gitlab_merge_request_result.msg | default('') }}.
+          Status: {{ gitlab_merge_request_result.status | default('') }}.
+          Content: {{ gitlab_merge_request_result.content | default('') }}.
 
     - name: Get merge request status
       uri:
