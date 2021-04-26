@@ -21,7 +21,6 @@ provisioner:
   ansible_args:
     - --inventory=${ANSIBLE_INVENTORY}
     - --vault-password-file=${ANSIBLE_VAULT_PASSWORD_FILE:-/etc/hostname}
-    - "-vvv"
   inventory:
     hosts:
       molecule_hosts:
