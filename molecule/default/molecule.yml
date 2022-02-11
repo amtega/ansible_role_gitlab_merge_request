@@ -13,7 +13,7 @@ driver:
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/linters.sh"
 platforms:
   - name: "centos7-${INSTANCE_UUID:-1}"
-    image: centos:7
+    image: quay.io/centos/centos:centos7
     groups:
       - molecule_hosts
 provisioner:
