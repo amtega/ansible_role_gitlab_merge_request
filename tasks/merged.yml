@@ -1,13 +1,13 @@
 ---
-# Merged state role tasks
 
-- block:
+- name: Manage gitlab merge request merged state
+  block:
     - name: Assert merge is possible
-      assert:
+      ansible.builtin.assert:
         that: gitlab_merge_request_fact.merge_status == "can_be_merged"
 
     - name: Merge request
-      uri:
+      ansible.builtin.uri:
         url: >-
           {{ gitlab_merge_request_api_url
              + "/projects/"
@@ -35,7 +35,7 @@
       no_log: "{{ gitlab_merge_request_no_log | bool }}"
 
     - name: Update fact with gitlab merge accepted request info
-      set_fact:
+      ansible.builtin.set_fact:
         gitlab_merge_request_fact: >-
           {{ gitlab_merge_request_accept_result.json }}
       when: gitlab_merge_request_accept_result is changed

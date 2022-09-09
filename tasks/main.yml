@@ -1,14 +1,14 @@
 ---
-# Role tasks
 
-- block:
-    - include_tasks: present.yml
+- name: Setup gitlab merge request
+  block:
+    - ansible.builtin.include_tasks: present.yml
       when: gitlab_merge_request_state in ["present", "merged"]
 
-    - include_tasks: merged.yml
+    - ansible.builtin.include_tasks: merged.yml
       when: gitlab_merge_request_state == "merged"
 
-    - include_tasks: closed.yml
+    - ansible.builtin.include_tasks: closed.yml
       when:
         - gitlab_merge_request_state == "merged"
         - gitlab_merge_request_exists
