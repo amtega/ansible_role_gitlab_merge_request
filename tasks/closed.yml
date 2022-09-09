@@ -1,11 +1,11 @@
 ---
-# Closed state role tasks
 
-- block:
-    - include_tasks: open.yml
+- name: Manage gitlab merge request closed state
+  block:
+    - ansible.builtin.include_tasks: open.yml
 
     - name: Close merge request
-      uri:
+      ansible.builtin.uri:
         url: >-
           {{ gitlab_merge_request_api_url
              + "/projects/"
